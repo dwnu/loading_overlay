@@ -14,6 +14,7 @@ class GlobalLoaderOverlay extends StatefulWidget {
     this.disableBackButton = true,
     this.closeOnBackButton = false,
     this.textDirection = TextDirection.ltr,
+    this.shouldAddBackButtonInterceptor = true,
   }) : super(key: key);
 
   /// The child that will have the overlay upon
@@ -35,11 +36,14 @@ class GlobalLoaderOverlay extends StatefulWidget {
   /// Whether or not to disable the back button while loading.
   final bool disableBackButton;
 
-  //Hide the loader when back button pressed
+  /// Hide the loader when back button pressed
   final bool closeOnBackButton;
 
   /// TextDirection of the app. This is generaly used when putting [LoaderOverlay] above MaterialApp.
   final TextDirection textDirection;
+
+  /// Back button interceptor can collide with different navigation implementations. Set to false to disable overriding back button behavior.
+  final bool shouldAddBackButtonInterceptor;
 
   @override
   _GlobalLoaderOverlayState createState() => _GlobalLoaderOverlayState();
@@ -57,6 +61,7 @@ class _GlobalLoaderOverlayState extends State<GlobalLoaderOverlay> {
         overlayWidget: widget.overlayWidget,
         disableBackButton: widget.disableBackButton,
         closeOnBackButton: widget.closeOnBackButton,
+        shouldAddBackButtonInterceptor: widget.shouldAddBackButtonInterceptor,
         child: widget.child,
       ),
     );

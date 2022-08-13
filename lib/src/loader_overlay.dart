@@ -25,6 +25,7 @@ class LoaderOverlay extends StatefulWidget {
     this.switchOutCurve = Curves.linear,
     this.transitionBuilder = AnimatedSwitcher.defaultTransitionBuilder,
     this.layoutBuilder = AnimatedSwitcher.defaultLayoutBuilder,
+    this.shouldAddBackButtonInterceptor = true,
     required this.child,
   }) : super(key: key);
 
@@ -79,6 +80,9 @@ class LoaderOverlay extends StatefulWidget {
   /// The layout builder for the overlay
   final Widget Function(Widget?, List<Widget>) layoutBuilder;
 
+  /// Back button interceptor can collide with different navigation implementations. Set to false to disable overriding back button behavior.
+  final bool shouldAddBackButtonInterceptor;
+
   static const _prefix = '@loader-overlay';
 
   static const defaultOverlayWidgetKey = Key('$_prefix/default-widget');
@@ -113,7 +117,9 @@ class _LoaderOverlayState extends State<LoaderOverlay> {
   @override
   void dispose() {
     _overlayControllerWidget?.dispose();
-    BackButtonInterceptor.remove(myInterceptor);
+    if (widget.shouldAddBackButtonInterceptor) {
+      BackButtonInterceptor.remove(myInterceptor);
+    }
     super.dispose();
   }
 
@@ -141,10 +147,12 @@ class _LoaderOverlayState extends State<LoaderOverlay> {
             final isLoading = snapshot.data!['loading'] as bool;
             final widgetOverlay = snapshot.data!['widget'] as Widget?;
 
-            if (isLoading) {
-              BackButtonInterceptor.add(myInterceptor);
-            } else {
-              BackButtonInterceptor.remove(myInterceptor);
+            if (widget.shouldAddBackButtonInterceptor) {
+              if (isLoading) {
+                BackButtonInterceptor.add(myInterceptor);
+              } else {
+                BackButtonInterceptor.remove(myInterceptor);
+              }
             }
 
             return Stack(
